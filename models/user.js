@@ -23,10 +23,7 @@ const userSchema = mongoose.Schema(
 			enum: ['author', 'moderator', 'admin'],
 			default: 'author',
 		},
-		bio: {
-			type: String,
-			trim: true,
-		},
+		bio: String,
 		avatar: String,
 		isBanned: {
 			type: Boolean,
@@ -35,6 +32,13 @@ const userSchema = mongoose.Schema(
 	},
 	{ timestamps: true },
 );
+
+userSchema.set('toJSON', {
+	transform: (document, returnedObject) => {
+		// the password should not be revealed
+		delete returnedObject.password;
+	},
+});
 
 const User = mongoose.model('User', userSchema);
 export default User;
