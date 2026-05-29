@@ -4,6 +4,8 @@ import configureDB from './config/db.js';
 import userController from './controllers/user.js';
 import { checkSchema } from 'express-validator';
 import { userLoginSchema, userRegisterSchema } from './validators/user.js';
+import authMiddleware from './middlewares/authMiddleware.js';
+import roleMiddleware from './middlewares/roleMiddleware.js';
 dotenv.config();
 const PORT = process.env.PORT || 3636;
 
@@ -12,7 +14,7 @@ configureDB();
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
+app.get('/', authMiddleware, roleMiddleware(['author']), (req, res) => {
 	res.json('Hello World!');
 });
 
