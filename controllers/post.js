@@ -1,6 +1,6 @@
 const postController = {};
 
-postController.getPost = async (req, res) => {
+postController.getPosts = async (req, res) => {
 	// TODO: implement this controller
 	res.status(404).json({ error: 'Not implemented' });
 };
@@ -30,12 +30,12 @@ postController.submitDraftForReview = async (req, res) => {
 	res.status(404).json({ error: 'Not implemented' });
 };
 
-postController.likePost = async (req, res) => {
+postController.likePostById = async (req, res) => {
 	// TODO: implement this controller
 	res.status(404).json({ error: 'Not implemented' });
 };
 
-postController.getLoggedInUserPost = async (req, res) => {
+postController.getLoggedInUserPosts = async (req, res) => {
 	// TODO: implement this controller
 	res.status(404).json({ error: 'Not implemented' });
 };

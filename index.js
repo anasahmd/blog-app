@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 import configureDB from './config/db.js';
 import categoryRouter from './routes/category.js';
 import userRouter from './routes/user.js';
+import postRouter from './routes/post.js';
+import authMiddleware from './middlewares/authMiddleware.js';
+import roleMiddleware from './middlewares/roleMiddleware.js';
+import moderationRouter from './routes/moderation.js';
 dotenv.config();
 const PORT = process.env.PORT || 3636;
 
@@ -20,6 +24,16 @@ app.use('/api/auth', userRouter);
 
 // Category Router
 app.use('/api/categories', categoryRouter);
+
+// Post router
+app.use('/api/posts', postRouter);
+
+app.use(
+	'/api/moderation',
+	authMiddleware,
+	roleMiddleware(['moderator', 'admin']),
+	moderationRouter,
+);
 
 // 404 handler
 app.use((req, res) => {
