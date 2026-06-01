@@ -61,6 +61,7 @@ export const categoryUpdateSchema = {
 						name: value,
 					}).collation({ locale: 'en', strength: 2 });
 
+					// Checks whether new category name is already taken
 					if (category && category._id.toString() !== req.params.id) {
 						throw new Error('Category already exists');
 					}

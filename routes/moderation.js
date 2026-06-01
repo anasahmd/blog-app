@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import moderationController from '../controllers/moderation';
+import moderationController from '../controllers/moderation.js';
 
 const moderationRouter = Router();
 

@@ -13,6 +13,7 @@ const postSchema = mongoose.Schema(
 			unique: true,
 			trim: true,
 			lowercase: true,
+			index: true,
 		},
 		content: {
 			type: String,
@@ -34,15 +35,22 @@ const postSchema = mongoose.Schema(
 			ref: 'Category',
 			require: true,
 		},
-		tags: {
-			type: Map,
-			of: String,
-		},
+		tags: [
+			{
+				type: String,
+			},
+		],
 		coverImage: String,
 		views: {
 			type: Number,
 			default: 0,
 		},
+		likes: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'User',
+			},
+		],
 		rejectionReason: String,
 	},
 	{ timestamps: true },
