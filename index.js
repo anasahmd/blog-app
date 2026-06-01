@@ -1,16 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import configureDB from './config/db.js';
-import userController from './controllers/user.js';
-import { checkSchema } from 'express-validator';
-import { userLoginSchema, userRegisterSchema } from './validators/user.js';
-import authMiddleware from './middlewares/authMiddleware.js';
-import roleMiddleware from './middlewares/roleMiddleware.js';
-import {
-	categoryPostSchema,
-	categoryUpdateSchema,
-} from './validators/category.js';
-import categoryController from './controllers/category.js';
+import categoryRouter from './routes/category.js';
+import userRouter from './routes/user.js';
 dotenv.config();
 const PORT = process.env.PORT || 3636;
 
@@ -19,40 +11,33 @@ configureDB();
 
 app.use(express.json());
 
-app.get('/', authMiddleware, roleMiddleware(['author']), (req, res) => {
+app.get('/', (req, res) => {
 	res.json('Hello World!');
 });
 
 // User Authentication routes
-app.post(
-	'/api/auth/register',
-	checkSchema(userRegisterSchema),
-	userController.register,
-);
-app.post('/api/auth/login', checkSchema(userLoginSchema), userController.login);
+app.use('/api/auth', userRouter);
 
-// Category routes
-app.get('/api/categories', categoryController.listAllCategories);
-app.post(
-	'/api/categories',
-	authMiddleware,
-	roleMiddleware('admin'),
-	checkSchema(categoryPostSchema),
-	categoryController.postCategory,
-);
-app.put(
-	'/api/categories/:id',
-	authMiddleware,
-	roleMiddleware('admin'),
-	checkSchema(categoryUpdateSchema),
-	categoryController.updateCategory,
-);
-app.delete(
-	'/api/categories/:id',
-	authMiddleware,
-	roleMiddleware('admin'),
-	categoryController.deleteCategory,
-);
+// Category Router
+app.use('/api/categories', categoryRouter);
+
+// 404 handler
+app.use((req, res) => {
+	res.status(404).json({ error: 'Unknown Endpoint' });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+	if (err.name === 'CastError') {
+		return res.status(400).send({ error: 'malformatted id' });
+	} else if (err.name === 'ValidationError') {
+		return res.status(400).json({ error: err.message });
+	}
+
+	console.log(err);
+
+	res.json({ error: 'Something went wrong' });
+});
 
 app.listen(PORT, () => {
 	console.log('Listening on PORT: ' + PORT);

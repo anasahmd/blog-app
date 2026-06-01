@@ -5,13 +5,8 @@ import slugify from 'slugify';
 const categoryController = {};
 
 categoryController.listAllCategories = async (req, res) => {
-	try {
-		const categories = await Category.find();
-		res.json({ categories });
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({ error: 'Something went wrong' });
-	}
+	const categories = await Category.find();
+	res.json({ categories });
 };
 
 categoryController.postCategory = async (req, res) => {
@@ -22,18 +17,14 @@ categoryController.postCategory = async (req, res) => {
 	}
 
 	const { name, description, isActive } = req.body;
-	try {
-		const category = new Category({ name, description, isActive });
-		category.slug = slugify(name, { lower: true, strict: true });
-		category.createdBy = req.userId;
 
-		const savedCategory = await category.save();
+	const category = new Category({ name, description, isActive });
+	category.slug = slugify(name, { lower: true, strict: true });
+	category.createdBy = req.userId;
 
-		res.status(201).json({ category: savedCategory });
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({ error: 'Something went wrong' });
-	}
+	const savedCategory = await category.save();
+
+	res.status(201).json({ category: savedCategory });
 };
 
 categoryController.updateCategory = async (req, res) => {
@@ -46,46 +37,32 @@ categoryController.updateCategory = async (req, res) => {
 	}
 
 	const { name, description, isActive } = req.body;
-	try {
-		const slug = slugify(name, { lower: true, strict: true });
 
-		const category = await Category.findOneAndUpdate(
-			{ _id: id },
-			{ name, description, isActive, slug },
-			{ returnDocument: 'after', runValidators: true },
-		);
+	const slug = slugify(name, { lower: true, strict: true });
 
-		if (!category) {
-			return res.status(404).json({ error: 'Category not found' });
-		}
+	const category = await Category.findOneAndUpdate(
+		{ _id: id },
+		{ name, description, isActive, slug },
+		{ returnDocument: 'after', runValidators: true },
+	);
 
-		res.status(201).json({ category });
-	} catch (err) {
-		if (err.name === 'CastError') {
-			return res.status(400).json({ message: 'Invalid id format' });
-		}
-		console.log(err);
-		res.status(500).json({ error: 'Something went wrong' });
+	if (!category) {
+		return res.status(404).json({ error: 'Category not found' });
 	}
+
+	res.status(201).json({ category });
 };
 
+// TODO: Delete related posts of the category
 categoryController.deleteCategory = async (req, res) => {
 	const { id } = req.params;
-	try {
-		const deletedCategory = await Category.findOneAndDelete({ _id: id });
+	const deletedCategory = await Category.findOneAndDelete({ _id: id });
 
-		if (!deletedCategory) {
-			return res.status(404).json({ error: 'Category not found' });
-		}
-
-		res.json({ category: deletedCategory });
-	} catch (err) {
-		if (err.name === 'CastError') {
-			return res.status(400).json({ message: 'Invalid id format' });
-		}
-		console.log(err);
-		res.status(500).json({ error: 'Something went wrong' });
+	if (!deletedCategory) {
+		return res.status(404).json({ error: 'Category not found' });
 	}
+
+	res.json({ category: deletedCategory });
 };
 
 export default categoryController;

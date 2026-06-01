@@ -15,21 +15,16 @@ userController.register = async (req, res) => {
 
 	const { name, email, password, bio, avatar } = req.body;
 
-	try {
-		const user = new User({ name, email, bio, avatar });
+	const user = new User({ name, email, bio, avatar });
 
-		// Hash the password
-		const salt = await bcrypt.genSalt();
-		const hash = await bcrypt.hash(password, salt);
-		user.password = hash;
+	// Hash the password
+	const salt = await bcrypt.genSalt();
+	const hash = await bcrypt.hash(password, salt);
+	user.password = hash;
 
-		// Saving the user
-		user.save();
-		res.status(201).json(user);
-	} catch (e) {
-		console.log(e);
-		res.status(500).json({ error: 'Something went wrong' });
-	}
+	// Saving the user
+	user.save();
+	res.status(201).json(user);
 };
 
 userController.login = async (req, res) => {
@@ -42,32 +37,37 @@ userController.login = async (req, res) => {
 
 	const { email, password } = req.body;
 
-	try {
-		const user = await User.findOne({ email });
+	const user = await User.findOne({ email });
 
-		if (!user) {
-			return res.status(401).json({ error: 'Invalid credentials' });
-		}
-
-		const isValidPassword = await bcrypt.compare(password, user.password);
-
-		if (!isValidPassword) {
-			return res.status(401).json({ error: 'Invalid credentials' });
-		}
-
-		const token = jwt.sign(
-			{ userId: user._id, userRole: user.role },
-			process.env.JWT_SECRET,
-			{
-				expiresIn: '7d',
-			},
-		);
-
-		res.json({ token });
-	} catch (e) {
-		console.log(e);
-		res.status(500).json({ error: 'Something went wrong' });
+	if (!user) {
+		return res.status(401).json({ error: 'Invalid credentials' });
 	}
+
+	const isValidPassword = await bcrypt.compare(password, user.password);
+
+	if (!isValidPassword) {
+		return res.status(401).json({ error: 'Invalid credentials' });
+	}
+
+	const token = jwt.sign(
+		{ userId: user._id, userRole: user.role },
+		process.env.JWT_SECRET,
+		{
+			expiresIn: '7d',
+		},
+	);
+
+	res.json({ token });
+};
+
+userController.getUserProfile = async (req, res) => {
+	// TODO: implement this controller
+	res.status(404).json({ error: 'Not implemented' });
+};
+
+userController.updateUserProfile = async (req, res) => {
+	// TODO: implement this controller
+	res.status(404).json({ error: 'Not implemented' });
 };
 
 export default userController;

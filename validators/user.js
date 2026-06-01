@@ -104,3 +104,6 @@ export const userLoginSchema = {
 		},
 	},
 };
+
+// TODO: Implement user update schema
+export const userUpdateSchema = {};
