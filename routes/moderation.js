@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import moderationController from '../controllers/moderation.js';
+import roleMiddleware from '../middlewares/roleMiddleware.js';
 
 const moderationRouter = Router();
 
-// All middlewares are being applied in index file
+// !!! All middlewares are being applied in index file
 
 moderationRouter.get('/pending', moderationController.getPendingPosts);
 

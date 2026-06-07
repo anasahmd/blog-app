@@ -1,13 +1,14 @@
 import jwt from 'jsonwebtoken';
 
 const authMiddleware = async (req, res, next) => {
-	const token = req.headers.authorization;
+	const authHeader = req.headers.authorization;
 
-	if (!token) {
+	if (!authHeader || !authHeader.startsWith('Bearer ')) {
 		return res.status(401).json({ error: 'Invalid token' });
 	}
 
 	try {
+		const token = authHeader.split(' ')[1];
 		const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 		req.userId = decodedToken.userId;
 		req.userRole = decodedToken.userRole;

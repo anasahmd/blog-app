@@ -7,6 +7,8 @@ import postRouter from './routes/post.js';
 import authMiddleware from './middlewares/authMiddleware.js';
 import roleMiddleware from './middlewares/roleMiddleware.js';
 import moderationRouter from './routes/moderation.js';
+import adminRouter from './routes/admin.js';
+import morgan from 'morgan';
 dotenv.config();
 const PORT = process.env.PORT || 3636;
 
@@ -14,6 +16,7 @@ const app = express();
 configureDB();
 
 app.use(express.json());
+app.use(morgan('combined'));
 
 app.get('/', (req, res) => {
 	res.json('Hello World!');
@@ -34,6 +37,8 @@ app.use(
 	roleMiddleware(['moderator', 'admin']),
 	moderationRouter,
 );
+
+app.use('/api/admin', authMiddleware, roleMiddleware(['admin']), adminRouter);
 
 // 404 handler
 app.use((req, res) => {

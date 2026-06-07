@@ -62,18 +62,17 @@ postController.updatePostById = async (req, res) => {
 		return res.status(400).json({ error: 'Category not found' });
 	}
 
+	const slug = slugify(title + ' ' + Date.now(), { lower: true, strict: true });
+
 	const post = await Post.findOneAndUpdate(
 		{ _id: req.params.id },
-		{ title, content, categoryId, tags: [...new Set(tags)], coverImage },
+		{ title, content, slug, categoryId, tags: [...new Set(tags)], coverImage },
 		{ returnDocument: 'after', runValidators: true },
 	);
 
 	if (!post) {
 		return res.status(404).json({ error: 'Post not found' });
 	}
-
-	// TODO: Figure out whether to update slug or not
-	// post.slug = slugify(title + ' ' + Date.now(), { lower: true, strict: true });
 
 	res.status(201).json(post);
 };
@@ -91,18 +90,45 @@ postController.deletePostById = async (req, res) => {
 };
 
 postController.submitDraftForReview = async (req, res) => {
-	// TODO: implement this controller
-	res.status(404).json({ error: 'Not implemented' });
+	const post = await Post.findOneAndUpdate(
+		{ _id: req.params.id },
+		{ status: 'pending' },
+		{ returnDocument: 'after', runValidators: true },
+	);
+
+	if (!post) {
+		return res.json(404).json({ message: 'Post not found' });
+	}
+
+	res.json({ post });
 };
 
 postController.likePostById = async (req, res) => {
-	// TODO: implement this controller
-	res.status(404).json({ error: 'Not implemented' });
+	let post = await Post.findOne({ _id: req.params.id });
+
+	if (!post) {
+		return res.json(404).json({ message: 'Post not found' });
+	}
+
+	if (post.likes.includes(req.userId)) {
+		post = await Post.findOneAndUpdate(
+			{ _id: post._id },
+			{ $pull: { likes: req.userId } },
+			{ returnDocument: 'after', runValidators: true },
+		);
+	} else {
+		post = await Post.findOneAndUpdate(
+			{ _id: post._id },
+			{ $push: { likes: req.userId } },
+			{ returnDocument: 'after', runValidators: true },
+		);
+	}
+	res.json(post);
 };
 
 postController.getLoggedInUserPosts = async (req, res) => {
-	// TODO: implement this controller
-	res.status(404).json({ error: 'Not implemented' });
+	const posts = await Post.find({ author: req.userId });
+	res.json(posts);
 };
 
 export default postController;

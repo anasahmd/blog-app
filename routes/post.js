@@ -18,32 +18,36 @@ postRouter
 		postController.createPost,
 	);
 
+postRouter.get(
+	'/my',
+	authMiddleware,
+	roleMiddleware(['author', 'admin']),
+	postController.getLoggedInUserPosts,
+);
+
 postRouter.get('/:slug', postController.getPostBySlug);
 
 postRouter
 	.route('/:id')
 	.put(
 		authMiddleware,
-		checkPostOwnerShip,
+		roleMiddleware(['post-owner', 'admin']),
 		checkSchema(postCreateSchema),
 		postController.updatePostById,
 	)
-	.delete(authMiddleware, checkPostOwnerShip, postController.deletePostById);
+	.delete(
+		authMiddleware,
+		roleMiddleware(['post-owner', 'admin']),
+		postController.deletePostById,
+	);
 
 postRouter.patch(
 	'/:id/submit',
 	authMiddleware,
-	checkPostOwnerShip,
+	roleMiddleware(['post-owner']),
 	postController.submitDraftForReview,
 );
 
 postRouter.patch('/:id/like', authMiddleware, postController.likePostById);
-
-postRouter.get(
-	'/my',
-	authMiddleware,
-	roleMiddleware(['author, admin']),
-	postController.getLoggedInUserPosts,
-);
 
 export default postRouter;
