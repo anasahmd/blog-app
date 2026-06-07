@@ -12,6 +12,6 @@ adminRouter.patch('/users/:id/role', adminController.changeUserRole);
 
 adminRouter.patch('/users/:id/ban', adminController.banUnbanUser);
 
-adminRouter.patch('/stats', adminController.getStatistics);
+adminRouter.get('/stats', adminController.getStatistics);
 
 export default adminRouter;

@@ -2,7 +2,6 @@ import { Router } from 'express';
 import postController from '../controllers/post.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import roleMiddleware from '../middlewares/roleMiddleware.js';
-import checkPostOwnerShip from '../middlewares/checkPostOwnerShip.js';
 import { checkSchema } from 'express-validator';
 import { postCreateSchema } from '../validators/post.js';
 
