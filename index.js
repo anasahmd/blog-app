@@ -9,6 +9,7 @@ import roleMiddleware from './middlewares/roleMiddleware.js';
 import moderationRouter from './routes/moderation.js';
 import adminRouter from './routes/admin.js';
 import morgan from 'morgan';
+import commentRouter from './routes/comment.js';
 dotenv.config();
 const PORT = process.env.PORT || 3636;
 
@@ -25,12 +26,13 @@ app.get('/', (req, res) => {
 // User Authentication routes
 app.use('/api/auth', userRouter);
 
-// Category Router
+// Category routes
 app.use('/api/categories', categoryRouter);
 
-// Post router
+// Post routes
 app.use('/api/posts', postRouter);
 
+// Moderation routes
 app.use(
 	'/api/moderation',
 	authMiddleware,
@@ -38,7 +40,11 @@ app.use(
 	moderationRouter,
 );
 
+// Admin routes
 app.use('/api/admin', authMiddleware, roleMiddleware(['admin']), adminRouter);
+
+// Comment routes
+app.use('/api/comments', commentRouter);
 
 // 404 handler
 app.use((req, res) => {

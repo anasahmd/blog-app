@@ -4,6 +4,8 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 import roleMiddleware from '../middlewares/roleMiddleware.js';
 import { checkSchema } from 'express-validator';
 import { postCreateSchema } from '../validators/post.js';
+import commentController from '../controllers/comment.js';
+import { commentCreateSchema } from '../validators/comment.js';
 
 const postRouter = Router();
 
@@ -48,5 +50,15 @@ postRouter.patch(
 );
 
 postRouter.patch('/:id/like', authMiddleware, postController.likePostById);
+
+// Comment routes
+postRouter.get('/:id/comments', commentController.getComments);
+
+postRouter.post(
+	'/:id/comments',
+	authMiddleware,
+	checkSchema(commentCreateSchema),
+	commentController.postComment,
+);
 
 export default postRouter;

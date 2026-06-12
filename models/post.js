@@ -51,6 +51,12 @@ const postSchema = mongoose.Schema(
 				ref: 'User',
 			},
 		],
+		flaggedBy: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'User',
+			},
+		],
 		rejectionReason: String,
 	},
 	{ timestamps: true },

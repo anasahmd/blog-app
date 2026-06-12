@@ -2,6 +2,7 @@ import { validationResult } from 'express-validator';
 import Post from '../models/post.js';
 import slugify from 'slugify';
 import Category from '../models/category.js';
+import Comment from '../models/comment.js';
 
 const postController = {};
 
@@ -39,7 +40,11 @@ postController.createPost = async (req, res) => {
 };
 
 postController.getPostBySlug = async (req, res) => {
-	const post = await Post.findOne({ slug: req.params.slug });
+	const post = await Post.findOneAndUpdate(
+		{ slug: req.params.slug },
+		{ $inc: { views: 1 } },
+		{ returnDocument: 'after' },
+	);
 	if (!post) {
 		return res.status(404).json({ error: 'Post not found' });
 	}
@@ -86,6 +91,8 @@ postController.deletePostById = async (req, res) => {
 		return res.status(404).json({ error: 'Post not found' });
 	}
 
+	await Comment.deleteMany({ post: req.params.id });
+
 	res.json(post);
 };
 
@@ -114,13 +121,13 @@ postController.likePostById = async (req, res) => {
 		post = await Post.findOneAndUpdate(
 			{ _id: post._id },
 			{ $pull: { likes: req.userId } },
-			{ returnDocument: 'after', runValidators: true },
+			{ runValidators: true },
 		);
 	} else {
 		post = await Post.findOneAndUpdate(
 			{ _id: post._id },
 			{ $push: { likes: req.userId } },
-			{ returnDocument: 'after', runValidators: true },
+			{ runValidators: true },
 		);
 	}
 	res.json(post);
