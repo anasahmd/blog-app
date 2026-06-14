@@ -33,7 +33,7 @@ const postSchema = mongoose.Schema(
 		category: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Category',
-			require: true,
+			required: true,
 		},
 		tags: [
 			{

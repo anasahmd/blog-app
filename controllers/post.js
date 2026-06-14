@@ -7,7 +7,25 @@ import Comment from '../models/comment.js';
 const postController = {};
 
 postController.getPosts = async (req, res) => {
-	const posts = await Post.find();
+	const search = req.query.search || '';
+	let category = req.query.category || '';
+	if (category) {
+		category = await Category.findOne({ slug: category.toLowerCase() });
+	}
+	const searchQuery = {
+		title: { $regex: search, $options: 'i' },
+		category: category?._id,
+	};
+
+	const sort = req.query.sort === 'oldest' ? -1 : 1;
+	const page = parseInt(req.query.page) || 1;
+	const limit = parseInt(req.query.limit) || 10;
+	const skip = (page - 1) * limit;
+
+	const posts = await Post.find(searchQuery)
+		.skip(skip)
+		.limit(limit)
+		.sort({ updatedAt: sort });
 	res.json(posts);
 };
 
@@ -26,7 +44,7 @@ postController.createPost = async (req, res) => {
 		return res.status(400).json({ error: 'Category not found' });
 	}
 
-	let post = new Post({ title, content, categoryId, coverImage });
+	let post = new Post({ title, content, category: categoryId, coverImage });
 
 	post.slug = slugify(title + ' ' + Date.now(), { lower: true, strict: true });
 
