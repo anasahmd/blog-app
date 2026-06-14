@@ -61,13 +61,26 @@ userController.login = async (req, res) => {
 };
 
 userController.getUserProfile = async (req, res) => {
-	// TODO: implement this controller
-	res.status(404).json({ error: 'Not implemented' });
+	const user = await User.findOne({ _id: req.userId });
+	res.json(user);
 };
 
 userController.updateUserProfile = async (req, res) => {
-	// TODO: implement this controller
-	res.status(404).json({ error: 'Not implemented' });
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ errors: errors.array() });
+	}
+
+	const { name, bio, avatar } = req.body;
+
+	const user = await User.findOneAndUpdate(
+		{ _id: req.userId },
+		{ name, bio, avatar },
+		{ runValidators: true, returnDocument: 'after' },
+	);
+
+	res.json(user);
 };
 
 export default userController;

@@ -105,5 +105,23 @@ export const userLoginSchema = {
 	},
 };
 
-// TODO: Implement user update schema
-export const userUpdateSchema = {};
+export const userUpdateSchema = {
+	name: {
+		exists: {
+			errorMessage: 'Name is required',
+		},
+		notEmpty: {
+			errorMessage: 'Name cannot be empty',
+		},
+		trim: true,
+		isLength: { options: { min: 2 } },
+	},
+	bio: {
+		optional: true,
+	},
+	avatar: {
+		optional: true,
+		trim: true,
+		isURL: true,
+	},
+};
