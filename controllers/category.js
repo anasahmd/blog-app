@@ -1,6 +1,7 @@
 import { validationResult } from 'express-validator';
 import Category from '../models/category.js';
 import slugify from 'slugify';
+import Post from '../models/post.js';
 
 const categoryController = {};
 
@@ -53,7 +54,6 @@ categoryController.updateCategory = async (req, res) => {
 	res.status(201).json({ category });
 };
 
-// TODO: Delete related posts of the category
 categoryController.deleteCategory = async (req, res) => {
 	const { id } = req.params;
 	const deletedCategory = await Category.findOneAndDelete({ _id: id });
@@ -61,6 +61,8 @@ categoryController.deleteCategory = async (req, res) => {
 	if (!deletedCategory) {
 		return res.status(404).json({ error: 'Category not found' });
 	}
+
+	await Post.deleteMany({ category: deletedCategory._id });
 
 	res.json({ category: deletedCategory });
 };

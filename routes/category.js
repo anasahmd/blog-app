@@ -21,7 +21,7 @@ categoryRouter
 	);
 
 categoryRouter
-	.route('/')
+	.route('/:id')
 	.put(
 		authMiddleware,
 		roleMiddleware('admin'),

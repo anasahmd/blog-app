@@ -139,13 +139,13 @@ postController.likePostById = async (req, res) => {
 		post = await Post.findOneAndUpdate(
 			{ _id: post._id },
 			{ $pull: { likes: req.userId } },
-			{ runValidators: true },
+			{ runValidators: true, returnDocument: 'after' },
 		);
 	} else {
 		post = await Post.findOneAndUpdate(
 			{ _id: post._id },
 			{ $push: { likes: req.userId } },
-			{ runValidators: true },
+			{ runValidators: true, returnDocument: 'after' },
 		);
 	}
 	res.json(post);

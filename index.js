@@ -10,6 +10,7 @@ import moderationRouter from './routes/moderation.js';
 import adminRouter from './routes/admin.js';
 import morgan from 'morgan';
 import commentRouter from './routes/comment.js';
+import analyticsRouter from './routes/analytics.js';
 dotenv.config();
 const PORT = process.env.PORT || 3636;
 
@@ -45,6 +46,9 @@ app.use('/api/admin', authMiddleware, roleMiddleware(['admin']), adminRouter);
 
 // Comment routes
 app.use('/api/comments', commentRouter);
+
+// Analytics routes
+app.use('/api/analytics', analyticsRouter);
 
 // 404 handler
 app.use((req, res) => {
